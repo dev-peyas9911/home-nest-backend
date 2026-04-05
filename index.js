@@ -29,6 +29,18 @@ const client = new MongoClient(process.env.MONGODB_URI, {
 async function run() {
     try {
         const db = client.db('homenestDB')
+        const propertiesCollection = db.collection('properties');
+
+        // Save a property data in db
+        app.post('/properties', async(req, res) => {
+            const propertyData = req.body;
+            console.log(propertyData);
+            const result = await propertiesCollection.insertOne(propertyData);
+            res.send(result);
+        })
+
+        // Get all properties from db
+        
 
 
         // Send a ping to confirm a successful connection
