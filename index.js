@@ -30,9 +30,10 @@ async function run() {
     try {
         const db = client.db('homenestDB')
         const propertiesCollection = db.collection('properties');
+        const reviewsCollection = db.collection('reviews');
 
         // Save a property data in db
-        app.post('/properties', async(req, res) => {
+        app.post('/properties', async (req, res) => {
             const propertyData = req.body;
             console.log(propertyData);
             const result = await propertiesCollection.insertOne(propertyData);
@@ -40,17 +41,55 @@ async function run() {
         })
 
         // Get all properties from db
-        app.get('/properties', async(req, res) => {
+        app.get('/properties', async (req, res) => {
             const result = await propertiesCollection.find().toArray();
             res.send(result);
         })
 
+        // GET properties for a specific user
+        app.get('/my-properties', async (req, res) => {
+            const email = req.query.email;
+            if (!email) {
+                return res.status(400).send({ message: "Email is required" });
+            }
+            const query = { userEmail: email };
+            const result = await propertiesCollection.find(query).toArray();
+            res.send(result);
+        });
+
         // Get single properties from db by id
-        app.get('/properties/:id', async(req, res) => {
+        app.get('/properties/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await propertiesCollection.findOne({_id: new ObjectId(id)})
+            const result = await propertiesCollection.findOne({ _id: new ObjectId(id) })
             res.send(result);
         })
+
+        // Get latest featured properties from db
+        app.get('/featured-properties', async (req, res) => {
+            // .sort({ _id: -1 }) sorts by newest
+            // .limit(6) restricts the result to 6 items
+            const result = await propertiesCollection
+                .find()
+                .sort({ _id: -1 })
+                .limit(6)
+                .toArray();
+            res.send(result);
+        });
+
+        // POST a new review
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+
+            // Optional: Add server-side timestamp
+            review.reviewDate = new Date().toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+
+            const result = await reviewsCollection.insertOne(review);
+            res.send(result);
+        });
 
 
         // Send a ping to confirm a successful connection
