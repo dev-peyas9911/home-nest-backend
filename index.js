@@ -76,6 +76,32 @@ async function run() {
             res.send(result);
         });
 
+        // UPDATE a property
+        app.patch('/properties/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    name: req.body.name,
+                    description: req.body.description,
+                    category: req.body.category,
+                    price: parseFloat(req.body.price),
+                    location: req.body.location,
+                    image: req.body.image,
+                }
+            };
+            const result = await propertiesCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        });
+
+        // DELETE a property by ID
+        app.delete('/properties/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await propertiesCollection.deleteOne(query);
+            res.send(result);
+        });
+
         // POST a new review
         app.post('/reviews', async (req, res) => {
             const review = req.body;
@@ -88,6 +114,17 @@ async function run() {
             });
 
             const result = await reviewsCollection.insertOne(review);
+            res.send(result);
+        });
+
+        // GET reviews submitted by a specific user
+        app.get('/reviews', async (req, res) => {
+            const email = req.query.email;
+            if (!email) {
+                return res.status(400).send({ message: "Email is required" });
+            }
+            const query = { reviewerEmail: email };
+            const result = await reviewsCollection.find(query).sort({ _id: -1 }).toArray();
             res.send(result);
         });
 
