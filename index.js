@@ -40,7 +40,10 @@ async function run() {
         })
 
         // Get all properties from db
-        
+        app.get('/properties', async(req, res) => {
+            const result = await propertiesCollection.find().toArray();
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
