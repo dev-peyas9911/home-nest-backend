@@ -41,10 +41,35 @@ async function run() {
         })
 
         // Get all properties from db
+        // app.get('/properties', async (req, res) => {
+        //     const result = await propertiesCollection.find().toArray();
+        //     res.send(result);
+        // })
         app.get('/properties', async (req, res) => {
-            const result = await propertiesCollection.find().toArray();
-            res.send(result);
-        })
+            const { search, sort } = req.query;
+
+            // 1. Build Search Query
+            let query = {};
+            if (search) {
+                query.name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive
+            }
+
+            // 2. Build Sort Options
+            let sortOptions = {};
+            if (sort === 'priceLow') sortOptions.price = 1;      // Ascending
+            if (sort === 'priceHigh') sortOptions.price = -1;    // Descending
+            if (sort === 'newest') sortOptions._id = -1;         // Newest First
+
+            try {
+                const result = await propertiesCollection
+                    .find(query)
+                    .sort(sortOptions)
+                    .toArray();
+                res.send(result);
+            } catch (error) {
+                res.status(500).send({ message: "Error fetching properties" });
+            }
+        });
 
         // GET properties for a specific user
         app.get('/my-properties', async (req, res) => {
