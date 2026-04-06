@@ -153,6 +153,23 @@ async function run() {
             res.send(result);
         });
 
+        // GET all reviews for a specific property
+        app.get('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { propertyId: id };
+
+            try {
+                // Sort by newest first to show recent activity
+                const result = await reviewsCollection
+                    .find(query)
+                    .sort({ _id: -1 })
+                    .toArray();
+                res.send(result);
+            } catch (error) {
+                res.status(500).send({ message: "Error fetching reviews" });
+            }
+        });
+
 
         // Send a ping to confirm a successful connection
         await client.db('admin').command({ ping: 1 })
