@@ -10,7 +10,10 @@ const port = process.env.PORT || 3000;
 // middleware
 app.use(cors(
     {
-        origin: [process.env.CLIENT_DOMAIN],
+        origin: [
+            'http://localhost:5173', // Your local development URL
+            'https://home-nest-frontend.netlify.app' // Your actual Netlify URL
+        ],
         credentials: true,
         optionSuccessStatus: 200,
     }
