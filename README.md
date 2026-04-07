@@ -2,7 +2,7 @@
 
 ## 🌐 Live API
 
-👉 https://your-backend-api-url.com
+👉 https://home-nest-backend.vercel.app
 
 ---
 
@@ -100,7 +100,7 @@ JWT_SECRET=your_jwt_secret
 ### 1️⃣ Clone Repository
 
 ```id="9y2b9m"
-git clone https://github.com/your-username/homenest-server.git
+git clone https://github.com/dev-peyas9911/home-nest-backend.git
 cd homenest-server
 ```
 
